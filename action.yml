@@ -1,0 +1,83 @@
+name: Generate SDK Action
+description: Generate an SDK using the OpenAPI Generator Project
+inputs: 
+  branch-name: 
+    description: Branch name
+    required: true
+  username: 
+    description: Github auth username
+    required: true
+  token: 
+    description: Github auth token
+    required: true
+  openapi-generator-version: 
+    description: The OpenAPI Generator project version, in `v5.4.0` format
+    required: false
+    default: 'v5.4.0'
+  language: 
+    description: The generator name (`-g`) argument for the openapi generator
+    required: true
+  config:
+    description: The configuration (`-c`) argument for the openapi generator
+    required: false
+
+# outputs: 
+
+runs: 
+  using: composite
+  steps: 
+    - name: Checkout
+      uses: actions/checkout@v2
+      with: 
+        token: ${{ inputs.token }}
+
+    - name: Create and push branch with upstream api specs
+      run: |
+          git config user.email "dx@bandwidth.com"
+          git config user.name ${{ inputs.username }}
+          git checkout -b ${{ inputs.branch-name }}
+          mkdir specs
+          mkdir api-specs
+          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/api-specs api-specs
+          rm -r api-specs/.git
+          cp -TRv api-specs/internal specs
+          rm -r api-specs
+          git add .
+          git commit -m "Clone Specs from `api-specs` repo"
+          git push origin ${{ inputs.branch-name }}
+      shell: bash
+   
+    - name: Stich Specs Together
+      run: |
+        npm i openapi-merge-cli
+        npx openapi-merge-cli --config utils/openapi-merge.yml
+        echo "help me"
+      shell: bash
+
+    - name: Clone OpenAPI Generator Project
+      run: |
+        mkdir generator
+        git clone -b ${{ inputs.openapi-generator-version }} --single-branch https://github.com/Bandwidth/openapi-generator generator
+      shell: bash
+
+    - name: Build SDK
+      run: |
+        echo "help me"
+      shell: bash
+
+    - name: Cleanup
+      run: |
+          rm -r generator
+          rm -r specs
+          git add .
+          git commit -m "Cleanup"
+          git push origin ${{ inputs.branch-name }}
+      shell: bash
+
+    - name: Open Pull Request
+      run: |
+        hub pull-request --base Bandwidth:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      shell: bash
+
