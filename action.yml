@@ -58,7 +58,6 @@ runs:
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
-
           exists=`git show-ref refs/heads/${{ inputs.branch-name }}`
           if [ -n "$exists" ]; then
             git fetch
@@ -66,8 +65,6 @@ runs:
           else
             git checkout -b ${{ inputs.branch-name }}
           fi
-
-          git checkout -b ${{ inputs.branch-name }}
       shell: bash
     
     - name: Create and push branch with upstream api specs
