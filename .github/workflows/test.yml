@@ -17,7 +17,6 @@ jobs:
           branch-name: temp-ci-cd-test
           username: ${{ secrets.DX_GITHUB_USERNAME }}
           token:  ${{ secrets.DX_GITHUB_TOKEN }}
-          api-spec-merge-config: ./utils/test-openapi-merge.yml
           openapi-generator-version: v5.3.0
           language: python
           config: ./utils/test-config.yml
