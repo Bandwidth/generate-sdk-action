@@ -38,35 +38,36 @@ inputs:
 runs: 
   using: composite
   steps: 
-    - name: Create and push branch with upstream api specs
-      if: inputs.file-source == 'remote' 
+    - name: Create and push branch
       run: |
           git config user.email "dx@bandwidth.com"
           git config user.name ${{ inputs.username }}
           git checkout -b ${{ inputs.branch-name }}
           mkdir specs
+      shell: bash
+    
+    - name: Create and push branch with upstream api specs
+      if: inputs.file-source == 'remote' 
+      run: |
           mkdir api-specs
           git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/api-specs api-specs
           rm -r api-specs/.git
           cp -TRv api-specs/internal specs
           rm -r api-specs
-          git add .
-          git commit -m "Clone Specs from `api-specs` repo"
-          git push origin ${{ inputs.branch-name }}
       shell: bash
 
     - name: Create and push branch with local api specs
       if: inputs.file-source == 'local'
       run: |
-        echo 'huzzah'
+        $ grep -A3 'output:' ./utils/test-openapi-merge.yml | tail -n1 | cut -c 13-
         exit 1
       shell: bash
    
     - name: Stich Specs Together
       run: |
         npm i openapi-merge-cli
-        npx openapi-merge-cli --config {{ inputs.api-spec-merge-config }}
-        echo "help me"
+        npx openapi-merge-cli --config {{ inputs.spec-merge-config }}
+        ls -la 
       shell: bash
 
     - name: Clone OpenAPI Generator Project
@@ -85,7 +86,7 @@ runs:
           rm -r generator
           rm -r specs
           git add .
-          git commit -m "Cleanup"
+          git commit -m "Generate SDK"
           git push origin ${{ inputs.branch-name }}
       shell: bash
 

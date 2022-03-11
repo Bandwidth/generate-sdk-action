@@ -1,1 +1,5 @@
-
+---
+inputs:
+- inputFile: "./utils/test-api-specs/test1.json"
+- inputFile: "./utils/test-api-specs/test2.json"
+output: "./api.json"
