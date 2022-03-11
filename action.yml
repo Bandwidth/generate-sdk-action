@@ -78,7 +78,7 @@ runs:
     - name: Clone OpenAPI Generator Project
       run: |
         mkdir generator
-        git clone -b ${{ inputs.openapi-generator-version }} --single-branch https://github.com/Bandwidth/openapi-generator generator
+        git clone -b ${{ inputs.openapi-generator-version }} https://github.com/Bandwidth/openapi-generator generator
         ls -la
       shell: bash
 
