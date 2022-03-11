@@ -68,13 +68,6 @@ runs:
           git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.specs-organization }}/${{ inputs.specs-repository }} remote
           rm -r remote/.git
       shell: bash
-
-    # - name: Create and push branch with local api specs
-    #   if: inputs.file-source == 'local'
-    #   run: |
-    #     grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g'
-    #     exit 1
-    #   shell: bash
    
     - name: Stich Specs Together
       run: |
