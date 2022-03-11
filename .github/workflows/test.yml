@@ -12,7 +12,6 @@ jobs:
         uses: ./ 
         with: 
           file-source: local
-          specs-directory: ./utils/test-api-specs
           spec-merge-config: ./utils/test-openapi-merge.yml
           branch-name: temp-ci-cd-test
           username: ${{ secrets.DX_GITHUB_USERNAME }}

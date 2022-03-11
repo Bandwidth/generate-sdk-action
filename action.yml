@@ -71,7 +71,7 @@ runs:
     - name: Stich Specs Together
       run: |
         npm i openapi-merge-cli
-        npx openapi-merge-cli --config {{ inputs.spec-merge-config }}
+        npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
         ls -la 
       shell: bash
 
@@ -79,6 +79,7 @@ runs:
       run: |
         mkdir generator
         git clone -b ${{ inputs.openapi-generator-version }} --single-branch https://github.com/Bandwidth/openapi-generator generator
+        ls -la
       shell: bash
 
     - name: Build SDK
