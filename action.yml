@@ -5,10 +5,6 @@ inputs:
     description: '`local` or `remote` - where to clone the api specs from'
     default: remote
     required: false
-  specs-directory: 
-    description: "If `file-source` is set to local, the directory with the api specs to be stitched together"
-    default: ./api-specs
-    required: false
   spec-merge-config: 
     description: The path to the config file for the openapi-merge-cli tool
     default: utils/openapi-merge.yml
@@ -16,12 +12,24 @@ inputs:
   branch-name: 
     description: Branch name
     required: true
+  user-email: 
+    description: Git user email
+    default: dx@bandwidth.com
+    required: false
   username: 
     description: Github auth username
     required: true
   token: 
     description: Github auth token
     required: true
+  organization: 
+    description: Owner of the remote repository
+    default: Bandwidth
+    required: false
+  repository: 
+    description: the remote repository to clone
+    default: api-specs 
+    required: false
   openapi-generator-version: 
     description: The OpenAPI Generator project version, in `v5.4.0` format
     required: false
@@ -40,28 +48,25 @@ runs:
   steps: 
     - name: Create and push branch
       run: |
-          git config user.email "dx@bandwidth.com"
+          git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
           git checkout -b ${{ inputs.branch-name }}
-          mkdir specs
       shell: bash
     
     - name: Create and push branch with upstream api specs
       if: inputs.file-source == 'remote' 
       run: |
-          mkdir api-specs
-          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/api-specs api-specs
-          rm -r api-specs/.git
-          cp -TRv api-specs/internal specs
-          rm -r api-specs
+          mkdir remote
+          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.organization }}/${{ inputs.repository }} remote
+          rm -r remote/.git
       shell: bash
 
-    - name: Create and push branch with local api specs
-      if: inputs.file-source == 'local'
-      run: |
-        grep -A3 'output:' ./utils/test-openapi-merge.yml | tail -n1 | cut -c 9- 
-        exit 1
-      shell: bash
+    # - name: Create and push branch with local api specs
+    #   if: inputs.file-source == 'local'
+    #   run: |
+    #     grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g'
+    #     exit 1
+    #   shell: bash
    
     - name: Stich Specs Together
       run: |
@@ -78,13 +83,18 @@ runs:
 
     - name: Build SDK
       run: |
+        grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g'
         echo "help me"
       shell: bash
 
+    - name: Remove Remote Directory
+      if: inputs.file-source == 'remote' 
+      run: rm -r remote
+      shell: bash
+    
     - name: Cleanup
       run: |
           rm -r generator
-          rm -r specs
           git add .
           git commit -m "Generate SDK"
           git push origin ${{ inputs.branch-name }}
