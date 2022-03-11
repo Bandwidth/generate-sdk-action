@@ -58,7 +58,7 @@ runs:
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
-          exists=`git show-ref refs/heads/${{ inputs.branch-name }}`
+          exists=`git show-ref refs/remotes/origin/${{ inputs.branch-name }}`
           if [ -n "$exists" ]; then
             git fetch
             git checkout ${{ inputs.branch-name }}
