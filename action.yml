@@ -22,18 +22,26 @@ inputs:
   token: 
     description: Github auth token
     required: true
-  organization: 
+  specs-organization: 
     description: Owner of the remote repository
     default: Bandwidth
     required: false
-  repository: 
+  specs-repository: 
     description: the remote repository to clone
     default: api-specs 
     required: false
-  openapi-generator-version: 
-    description: The OpenAPI Generator project version, in `v5.4.0` format
+  generator-organization: 
+    description: The git orgaization for the generator repository
     required: false
-    default: 'v5.4.0'
+    default: OpenAPITools
+  generator-repository: 
+    description: The git repository for the generator 
+    required: false
+    default: openapi-generator
+  openapi-generator-version: 
+    description: The OpenAPI Generator project version, in `v5.3.1` format
+    required: false
+    default: 'v5.3.1'
   language: 
     description: The generator name (`-g`) argument for the openapi generator
     required: true
@@ -57,7 +65,7 @@ runs:
       if: inputs.file-source == 'remote' 
       run: |
           mkdir remote
-          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.organization }}/${{ inputs.repository }} remote
+          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.specs-organization }}/${{ inputs.specs-repository }} remote
           rm -r remote/.git
       shell: bash
 
@@ -78,7 +86,7 @@ runs:
     - name: Clone OpenAPI Generator Project
       run: |
         mkdir generator
-        git clone -b ${{ inputs.openapi-generator-version }} https://github.com/Bandwidth/openapi-generator generator
+        git clone -b ${{ inputs.openapi-generator-version }} --single-branch https://github.com/${{ inputs.generator-organization }}/${{ inputs.generator-repository }} generator
         ls -la
       shell: bash
 
