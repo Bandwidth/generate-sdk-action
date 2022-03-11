@@ -61,7 +61,8 @@ runs:
 
           exists=`git show-ref refs/heads/${{ inputs.branch-name }}`
           if [ -n "$exists" ]; then
-              git checkout ${{ inputs.branch-name }}
+            git fetch
+            git checkout ${{ inputs.branch-name }}
           else
             git checkout -b ${{ inputs.branch-name }}
           fi
