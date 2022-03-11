@@ -1,6 +1,14 @@
 name: Generate SDK Action
 description: Generate an SDK using the OpenAPI Generator Project
 inputs: 
+  file-source: 
+    description: '`local` or `remote` - where to clone the api specs from'
+    default: remote
+    required: false
+  file-path: 
+    description: "If `file-source` is set to local, the path to the directory with the api specs to be stitched together"
+    default: ./api-specs
+    required: false
   branch-name: 
     description: Branch name
     required: true
@@ -10,6 +18,10 @@ inputs:
   token: 
     description: Github auth token
     required: true
+  api-spec-merge-config: 
+    description: The path to the config file for the openapi-merge-cli tool
+    default: utils/openapi-merge.yml
+    required: false
   openapi-generator-version: 
     description: The OpenAPI Generator project version, in `v5.4.0` format
     required: false
@@ -26,31 +38,34 @@ inputs:
 runs: 
   using: composite
   steps: 
-    - name: Checkout
-      uses: actions/checkout@v2
-      with: 
-        token: ${{ inputs.token }}
+    # - name: Create and push branch with upstream api specs
+    #   if: inputs.file-source == 'remote' 
+    #   run: |
+    #       git config user.email "dx@bandwidth.com"
+    #       git config user.name ${{ inputs.username }}
+    #       git checkout -b ${{ inputs.branch-name }}
+    #       mkdir specs
+    #       mkdir api-specs
+    #       git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/api-specs api-specs
+    #       rm -r api-specs/.git
+    #       cp -TRv api-specs/internal specs
+    #       rm -r api-specs
+    #       git add .
+    #       git commit -m "Clone Specs from `api-specs` repo"
+    #       git push origin ${{ inputs.branch-name }}
+    #   shell: bash
 
-    - name: Create and push branch with upstream api specs
+    - name: Create and push branch with local api specs
+      if: inputs.file-source == local
       run: |
-          git config user.email "dx@bandwidth.com"
-          git config user.name ${{ inputs.username }}
-          git checkout -b ${{ inputs.branch-name }}
-          mkdir specs
-          mkdir api-specs
-          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/api-specs api-specs
-          rm -r api-specs/.git
-          cp -TRv api-specs/internal specs
-          rm -r api-specs
-          git add .
-          git commit -m "Clone Specs from `api-specs` repo"
-          git push origin ${{ inputs.branch-name }}
+        echo 'huzzah'
+        exit 1
       shell: bash
    
     - name: Stich Specs Together
       run: |
         npm i openapi-merge-cli
-        npx openapi-merge-cli --config utils/openapi-merge.yml
+        npx openapi-merge-cli --config {{ inputs.api-spec-merge-config }}
         echo "help me"
       shell: bash
 

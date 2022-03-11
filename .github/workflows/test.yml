@@ -1,0 +1,23 @@
+name: Test
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout 
+        uses: actions/checkout@v2 
+
+      - name: Run Test with Local Files
+        uses: ./ 
+        with: 
+          file-source: local
+          branch-name: temp-ci-cd-test
+          username: ${{ secrets.DX_GITHUB_USERNAME }}
+          token:  ${{ secrets.DX_GITHUB_TOKEN }}
+          api-spec-merge-config: ./utils/test-openapi-merge.yml
+          openapi-generator-version: v5.3.0
+          language: python
+          config: ./utils/test-config.yml
+
+
