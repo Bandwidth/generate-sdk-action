@@ -56,7 +56,7 @@ runs:
     #   shell: bash
 
     - name: Create and push branch with local api specs
-      if: inputs.file-source == local
+      if: inputs.file-source == 'local'
       run: |
         echo 'huzzah'
         exit 1
