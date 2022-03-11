@@ -59,7 +59,7 @@ runs:
     - name: Create and push branch with local api specs
       if: inputs.file-source == 'local'
       run: |
-        grep -A3 'output:' ./utils/test-openapi-merge.yml | tail -n1 | cut -c 13-
+        grep -A3 'output:' ./utils/test-openapi-merge.yml | tail -n1
         exit 1
       shell: bash
    
