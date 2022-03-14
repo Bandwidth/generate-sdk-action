@@ -158,3 +158,5 @@ runs:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
 
+    - name: Delete Branch
+      run: $ git push origin --delete ${{ inputs.branch-name }}  
