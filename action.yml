@@ -111,11 +111,9 @@ runs:
           git add .
           if [ $(git diff --cached --exit-code) ]
           then
-            echo "empty"
-            git commit --allow-empty -m "Generate SDK (No Changes)"
-          else 
-            echo "not empty"
             git commit -m "Generate SDK"
+          else 
+            git commit --allow-empty -m "Generate SDK (No Changes)"
           fi
           git push origin ${{ inputs.branch-name }}
       shell: bash
