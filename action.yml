@@ -58,7 +58,6 @@ runs:
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
-          git pull origin main
           if [ git show-ref refs/remotes/origin/${{ inputs.branch-name }} ]; then
             echo "if 1"
             git fetch origin
