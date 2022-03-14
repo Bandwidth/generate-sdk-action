@@ -91,11 +91,12 @@ runs:
 
     - name: Build SDK
       run: |
+        spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g')
         cd generator
         mvn clean package
         java -jar modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
          -g {{ inputs.language }} \
-         -i (grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g') \
+         -i "$spec" \
          -c {{ inputs.config }} 
       shell: bash
 
