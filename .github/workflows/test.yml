@@ -1,0 +1,35 @@
+name: Test
+on: 
+  pull_request: 
+    paths:
+      - 'action.yml'
+  workflow_dispatch: 
+  
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout 
+        uses: actions/checkout@v2 
+
+      - name: Run Test with Local Files
+        id: generate
+        uses: ./ 
+        with: 
+          file-source: local
+          spec-merge-config: ./utils/test-openapi-merge.yml
+          branch-name: temp-ci-cd-test
+          username: ${{ secrets.DX_GITHUB_USERNAME }}
+          token:  ${{ secrets.DX_GITHUB_TOKEN }}
+          generator-organization: OpenAPITools
+          openapi-generator-version: v5.3.1
+          api-spec-path: ./utils/api.json
+          language: python
+          config: utils/test-config.yml
+      
+      - name: Close PR
+        run: | 
+          hub issue update {{ steps.generate.outputs.pr-number }} -s closed
+
+
