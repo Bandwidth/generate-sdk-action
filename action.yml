@@ -92,8 +92,11 @@ runs:
     - name: Build SDK
       run: |
         cd generator
-        mvn build
-        java -jar openapi-generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate -g {{ inputs.language }}  -i (grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g') -c {{ inputs.config }} 
+        mvn clean package
+        java -jar modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
+         -g {{ inputs.language }} \
+         -i (grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g') \
+         -c {{ inputs.config }} 
       shell: bash
 
     - name: Remove Remote Directory
