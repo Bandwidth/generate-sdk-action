@@ -127,7 +127,7 @@ runs:
           git add .
           if [ $(git diff --cached --exit-code) ]
           then
-            git commit -m "Generate SDK with ${{ inputs.openapi-generator-version }} of ${{ inputs.generator-organization }}:${{ inputs.generator-repository }}"
+            git commit -m "Generate SDK with ${{ inputs.generator-organization }}:${{ inputs.generator-repository }} ${{ inputs.openapi-generator-version }}"
           else 
             git commit --allow-empty -m "Generate SDK (No Changes)"
           fi
