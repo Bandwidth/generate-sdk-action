@@ -104,8 +104,7 @@ runs:
           rm -r generator
           git add .
           git commit -m "Generate SDK"
-          git pull
-          git push origin ${{ inputs.branch-name }}
+          git push -f origin ${{ inputs.branch-name }}
       shell: bash
 
     - name: Open Pull Request
