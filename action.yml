@@ -59,9 +59,8 @@ runs:
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
           if [ git show-ref refs/remotes/origin/${{ inputs.branch-name }} ]; then
-            git fetch
-            git checkout ${{ inputs.branch-name }}
-            git pull <remote> ${{ inputs.branch-name }}
+            git fetch origin
+            git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
           else
             git checkout -b ${{ inputs.branch-name }}
           fi
