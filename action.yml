@@ -96,8 +96,8 @@ runs:
         mvn --projects org.openapitools:openapi-generator-cli --am clean install
         java -jar modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
          -g ${{ inputs.language }} \
-         -i "$spec" \
-         -c ${{ inputs.config }} 
+         -i ../"$spec" \
+         -c ../${{ inputs.config }} 
       shell: bash
 
     - name: Remove Remote Directory
