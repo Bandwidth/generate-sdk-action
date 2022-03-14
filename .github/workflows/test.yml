@@ -24,6 +24,7 @@ jobs:
           token:  ${{ secrets.DX_GITHUB_TOKEN }}
           generator-organization: OpenAPITools
           openapi-generator-version: v5.3.1
+          api-spec-path: ./utils/api.json
           language: python
           config: utils/test-config.yml
       

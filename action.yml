@@ -42,6 +42,10 @@ inputs:
     description: The OpenAPI Generator project version, in `v5.3.1` format
     required: false
     default: 'v5.3.1'
+  api-spec-path: 
+    description: The destination of the API Specification after going through the openapi-merge tool
+    required: false
+    default: ./utils/bandwidth.json
   language: 
     description: The generator name (`-g`) argument for the openapi generator
     required: true
@@ -103,7 +107,7 @@ runs:
         spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 11- | sed 's/"//g')
         java -jar generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
          -g ${{ inputs.language }} \
-         -i "$spec" \
+         -i ${{ inputs.api-spec-path }}  \
          -c ${{ inputs.config }} 
       shell: bash
     
