@@ -1,0 +1,157 @@
+name: Generate SDK Action
+description: Generate an SDK using the OpenAPI Generator Project
+inputs: 
+  file-source: 
+    description: '`local` or `remote` - where to clone the api specs from'
+    default: remote
+    required: false
+  spec-merge-config: 
+    description: The path to the config file for the openapi-merge-cli tool
+    default: utils/openapi-merge.yml
+    required: false
+  branch-name: 
+    description: Branch name
+    required: true
+  user-email: 
+    description: Git user email
+    default: dx@bandwidth.com
+    required: false
+  username: 
+    description: Github auth username
+    required: true
+  token: 
+    description: Github auth token
+    required: true
+  specs-organization: 
+    description: Owner of the remote repository
+    default: Bandwidth
+    required: false
+  specs-repository: 
+    description: the remote repository to clone
+    default: api-specs 
+    required: false
+  generator-organization: 
+    description: The git orgaization for the generator repository
+    required: false
+    default: OpenAPITools
+  generator-repository: 
+    description: The git repository for the generator 
+    required: false
+    default: openapi-generator
+  openapi-generator-version: 
+    description: The OpenAPI Generator project version, in `v5.3.1` format
+    required: false
+    default: 'v5.3.1'
+  api-spec-path: 
+    description: The destination of the API Specification after going through the openapi-merge tool
+    required: false
+    default: ./utils/bandwidth.json
+  language: 
+    description: The generator name (`-g`) argument for the openapi generator
+    required: true
+  config:
+    description: The configuration (`-c`) argument for the openapi generator
+    required: false
+
+outputs: 
+  pr-number: 
+    description: "The number of the PR that was opened"
+    value: ${{ steps.output-pr-number.outputs.pr-number }}
+
+runs: 
+  using: composite
+  steps: 
+    - name: Create and push branch
+      run: |
+          git config user.email ${{ inputs.user-email }}
+          git config user.name ${{ inputs.username }}
+          git fetch origin
+          if [ -z $(git show-ref refs/remotes/origin/${{ inputs.branch-name }}) ]
+          then
+            git checkout -b ${{ inputs.branch-name }}
+            git push origin ${{ inputs.branch-name }} 
+          else
+            git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
+          fi
+      shell: bash
+    
+    - name: Create and push branch with upstream api specs
+      if: inputs.file-source == 'remote' 
+      run: |
+          mkdir remote
+          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.specs-organization }}/${{ inputs.specs-repository }} remote
+          rm -r remote/.git
+      shell: bash
+   
+    - name: Stich Specs Together
+      run: |
+        npm i openapi-merge-cli
+        npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
+      shell: bash
+
+    - name: Clone OpenAPI Generator Project
+      run: |
+        mkdir generator
+        git clone -b ${{ inputs.openapi-generator-version }} --single-branch https://github.com/${{ inputs.generator-organization }}/${{ inputs.generator-repository }} generator
+        ls -la
+      shell: bash
+
+    - name: Build Generator
+      run: |
+        cd generator
+        mvn --projects org.openapitools:openapi-generator-cli --am clean install
+        cd ..
+      shell: bash
+
+    - name: Build SDK
+      run: |
+        spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 11- | sed 's/"//g')
+        java -jar generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
+         -g ${{ inputs.language }} \
+         -i ${{ inputs.api-spec-path }}  \
+         -c ${{ inputs.config }} 
+      shell: bash
+    
+    - name: Cleanup
+      run: |
+        if [ '${{ inputs.file-source }}' == 'remote' ]
+        then
+          rm -r remote
+        fi
+        rm -r generator
+        rm -r node_modules
+      shell: bash
+
+    - name: Commmit
+      run: |
+          git add .
+          git diff
+          if [ $(git diff --exit-code) ]
+          then
+            git commit --allow-empty -m "Generate SDK (No Changes)"
+          else 
+            git commit -m "Generate SDK with ${{ inputs.generator-organization }}:${{ inputs.generator-repository }} ${{ inputs.openapi-generator-version }}"
+          fi
+          git push origin ${{ inputs.branch-name }}
+      shell: bash
+
+    - name: Open Pull Request
+      run: |
+        exists=$(hub pr list -h {{ inputs.branch-name }})
+        if [ -z "$exists" ]
+        then
+          hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
+        else
+          echo "PR already exists for this branch"
+        fi
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      shell: bash
+
+    - name: Output PR Number 
+      id: output-pr-number
+      run: echo "::set-output name=pr-number::$(hub pr list -h ${{ inputs.branch-name }} -f %I)"
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      shell: bash
+
