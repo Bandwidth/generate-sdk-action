@@ -58,6 +58,7 @@ runs:
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
+          git fetch origin
           git show-ref
           if [ -z $(git show-ref refs/remotes/origin/${{ inputs.branch-name }}) ]
           then
@@ -65,7 +66,6 @@ runs:
             git checkout -b ${{ inputs.branch-name }}
           else
             echo "if 2"
-            git fetch origin
             git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
           fi
       shell: bash
