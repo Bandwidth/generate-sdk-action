@@ -49,7 +49,10 @@ inputs:
     description: The configuration (`-c`) argument for the openapi generator
     required: false
 
-# outputs: 
+outputs: 
+  pr-number: 
+    description: "The number of the PR that was opened"
+    value: ${{ steps.output-pr-number.outputs.pr-number }}
 
 runs: 
   using: composite
@@ -141,7 +144,13 @@ runs:
         else
           hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
         fi
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+      shell: bash
 
+    - name: Output PR Number 
+      id: output-pr-number
+      run: echo "::set-output name=pr-number::$(hub pr list -h ${{ inputs.branch-name }} -f %I)"
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
