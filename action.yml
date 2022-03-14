@@ -102,6 +102,7 @@ runs:
     - name: Cleanup
       run: |
           rm -r generator
+          rm -r node_modules
           git add .
           git commit -m "Generate SDK"
           git push -f origin ${{ inputs.branch-name }}
