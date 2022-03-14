@@ -109,7 +109,7 @@ runs:
     - name: Commmit
       run: |
           git add .
-          git commit -m "Generate SDK"
+          git commit --allow-empty -m "Generate SDK"
           git push origin ${{ inputs.branch-name }}
       shell: bash
 
