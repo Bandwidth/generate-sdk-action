@@ -61,6 +61,7 @@ runs:
           if [ git show-ref refs/remotes/origin/${{ inputs.branch-name }} ]; then
             git fetch
             git checkout ${{ inputs.branch-name }}
+            git pull origin
           else
             git checkout -b ${{ inputs.branch-name }}
           fi
