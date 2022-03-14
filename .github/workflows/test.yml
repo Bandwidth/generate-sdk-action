@@ -19,6 +19,6 @@ jobs:
           generator-organization: OpenAPITools
           openapi-generator-version: v5.3.1
           language: python
-          config: ./utils/test-config.yml
+          config: utils/test-config.yml
 
 

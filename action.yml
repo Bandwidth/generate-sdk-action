@@ -58,11 +58,12 @@ runs:
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
-          if [ git show-ref refs/remotes/origin/${{ inputs.branch-name }} ]; then
-            git fetch
-            git checkout ${{ inputs.branch-name }}
-          else
+          git fetch origin
+          if [ -z $(git show-ref refs/remotes/origin/${{ inputs.branch-name }}) ]
+          then
             git checkout -b ${{ inputs.branch-name }}
+          else
+            git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
           fi
       shell: bash
     
@@ -88,28 +89,59 @@ runs:
         ls -la
       shell: bash
 
-    - name: Build SDK
+    - name: Build Generator
       run: |
-        grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g'
-        echo "help me"
+        spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g')
+        ls -la
+        cd generator
+        mvn --projects org.openapitools:openapi-generator-cli --am clean install
+        cd ..
       shell: bash
 
-    - name: Remove Remote Directory
-      if: inputs.file-source == 'remote' 
-      run: rm -r remote
+    - name: Build SDK
+      run: |
+        ls -la 
+        cd utils 
+        ls -la 
+        cd ..
+        java -jar generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
+         -g ${{ inputs.language }} \
+         -i "$spec" \
+         -c ${{ inputs.config }} 
       shell: bash
     
     - name: Cleanup
       run: |
-          rm -r generator
+        if [ '${{ inputs.file-source }}' == 'remote' ]
+        then
+          rm -r remote
+        fi
+        rm -r generator
+        rm -r node_modules
+      shell: bash
+
+    - name: Commmit
+      run: |
           git add .
-          git commit -m "Generate SDK"
-          git push -f origin ${{ inputs.branch-name }}
+          if [ $(git diff --cached --exit-code) ]
+          then
+            git commit -m "Generate SDK"
+          else 
+            git commit --allow-empty -m "Generate SDK (No Changes)"
+          fi
+          git push origin ${{ inputs.branch-name }}
       shell: bash
 
     - name: Open Pull Request
       run: |
-        hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
+        exists=$(hub pr list -h {{ inputs.branch-name }})
+        if [ -z "$exists" ]
+        then
+          echo "PR already exists for this branch"
+        else
+          hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
+        fi
+
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
