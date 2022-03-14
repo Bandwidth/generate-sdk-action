@@ -92,12 +92,14 @@ runs:
     - name: Build SDK
       run: |
         spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g')
+        ls -la
         cd generator
         mvn --projects org.openapitools:openapi-generator-cli --am clean install
-        java -jar modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
+        cd ..
+        java -jar generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
          -g ${{ inputs.language }} \
-         -i ../"$spec" \
-         -c ../${{ inputs.config }} 
+         -i "$spec" \
+         -c ${{ inputs.config }} 
       shell: bash
 
     - name: Remove Remote Directory
