@@ -125,7 +125,7 @@ runs:
     - name: Commmit
       run: |
           git add .
-          if [ $(git diff head --cached --exit-code) ]
+          if [ $(git diff --exit-code) ]
           then
             git commit --allow-empty -m "Generate SDK (No Changes)"
           else 
