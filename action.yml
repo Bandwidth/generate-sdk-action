@@ -69,6 +69,7 @@ runs:
           if [ -z $(git show-ref refs/remotes/origin/${{ inputs.branch-name }}) ]
           then
             git checkout -b ${{ inputs.branch-name }}
+            git push origin ${{ inputs.branch-name }} 
           else
             git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
           fi
