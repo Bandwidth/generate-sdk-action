@@ -58,6 +58,7 @@ runs:
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
+          git show-ref
           if [ -z $(git show-ref refs/remotes/origin/${{ inputs.branch-name }}) ]
           then
             echo "if 1"
