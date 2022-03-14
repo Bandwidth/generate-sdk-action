@@ -82,7 +82,6 @@ runs:
       run: |
         npm i openapi-merge-cli
         npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
-        ls -la 
       shell: bash
 
     - name: Clone OpenAPI Generator Project
