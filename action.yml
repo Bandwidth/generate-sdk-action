@@ -120,7 +120,7 @@ runs:
 
     - name: Open Pull Request
       run: |
-        exists=$($(hub pr list -h {{ inputs.branch-name }})
+        exists=$(hub pr list -h {{ inputs.branch-name }})
         if [ -z "$exists" ]
         then
           echo "PR already exists for this branch"
