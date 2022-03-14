@@ -110,7 +110,7 @@ runs:
 
     - name: Open Pull Request
       run: |
-        hub pull-request --base Bandwidth:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
+        hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
