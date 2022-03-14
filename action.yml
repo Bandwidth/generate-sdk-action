@@ -58,13 +58,14 @@ runs:
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
-          if [ git show-ref refs/remotes/origin/${{ inputs.branch-name }} ]; then
+          local exists = git show-ref refs/remotes/origin/${{ inputs.branch-name }}
+          if [ -z "$exists" ]; then
             echo "if 1"
-            git fetch origin
-            git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
+            git checkout -b ${{ inputs.branch-name }}
           else
             echo "if 2"
-            git checkout -b ${{ inputs.branch-name }}
+            git fetch origin
+            git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
           fi
       shell: bash
     
