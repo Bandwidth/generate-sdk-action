@@ -100,7 +100,7 @@ runs:
 
     - name: Build SDK
       run: |
-        spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 12- | sed 's/"//g')
+        spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 11- | sed 's/"//g')
         java -jar generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
          -g ${{ inputs.language }} \
          -i "$spec" \
