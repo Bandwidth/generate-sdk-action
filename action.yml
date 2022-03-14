@@ -120,10 +120,13 @@ runs:
 
     - name: Open Pull Request
       run: |
-          if [ -z $(hub pr list -h {{ inputs.branch-name }}) ]
-          then
-            hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
-          fi
+        exists=$($(hub pr list -h {{ inputs.branch-name }})
+        if [ -z "exists" ]
+        then
+          echo "PR already exists for this branch"
+        else
+          hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
+        fi
 
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
