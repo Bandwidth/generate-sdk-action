@@ -109,16 +109,14 @@ runs:
          -i "$spec" \
          -c ${{ inputs.config }} 
       shell: bash
-
-    - name: Remove Remote Directory
-      if: inputs.file-source == 'remote' 
-      run: rm -r remote
-      shell: bash
     
     - name: Cleanup
       run: |
-          rm -r generator
-          rm -r node_modules
+        if [ ${{ inputs.file-source }} == 'remote' ]
+          rm -r remote
+        fi
+        rm -r generator
+        rm -r node_modules
       shell: bash
 
     - name: Commmit
