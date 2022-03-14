@@ -8,17 +8,17 @@ jobs:
       - name: Checkout 
         uses: actions/checkout@v2 
 
-      - name: Run Test with Local Files
-        uses: ./ 
-        with: 
-          file-source: local
-          spec-merge-config: ./utils/test-openapi-merge.yml
-          branch-name: temp-ci-cd-test
-          username: ${{ secrets.DX_GITHUB_USERNAME }}
-          token:  ${{ secrets.DX_GITHUB_TOKEN }}
-          generator-organization: OpenAPITools
-          openapi-generator-version: v5.3.1
-          language: python
-          config: utils/test-config.yml
+      # - name: Run Test with Local Files
+      #   uses: ./ 
+      #   with: 
+      #     file-source: local
+      #     spec-merge-config: ./utils/test-openapi-merge.yml
+      #     branch-name: temp-ci-cd-test
+      #     username: ${{ secrets.DX_GITHUB_USERNAME }}
+      #     token:  ${{ secrets.DX_GITHUB_TOKEN }}
+      #     generator-organization: OpenAPITools
+      #     openapi-generator-version: v5.3.1
+      #     language: python
+      #     config: utils/test-config.yml
 
 
