@@ -31,5 +31,7 @@ jobs:
       - name: Close PR
         run: | 
           hub issue update ${{ steps.generate.outputs.pr-number }} -s closed
+        env: 
+          GITHUB_TOKEN: ${{ secrets.DX_GITHUB_TOKEN }}
 
 
