@@ -93,8 +93,6 @@ runs:
 
     - name: Build Generator
       run: |
-        spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 9- | sed 's/"//g')
-        ls -la
         cd generator
         mvn --projects org.openapitools:openapi-generator-cli --am clean install
         cd ..
@@ -102,10 +100,7 @@ runs:
 
     - name: Build SDK
       run: |
-        ls -la 
-        cd utils 
-        ls -la 
-        cd ..
+        spec=$(grep -A3 'output:' ${{ inputs.spec-merge-config }} | tail -n1 | cut -c 12- | sed 's/"//g')
         java -jar generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
          -g ${{ inputs.language }} \
          -i "$spec" \
