@@ -129,8 +129,10 @@ runs:
           git diff
           if [ $(git diff --exit-code) ]
           then
+            echo "No Changes"
             git commit --allow-empty -m "Generate SDK (No Changes)"
           else 
+            echo "Changes"
             git commit -m "Generate SDK with ${{ inputs.generator-organization }}:${{ inputs.generator-repository }} ${{ inputs.openapi-generator-version }}"
           fi
           git push origin ${{ inputs.branch-name }}
