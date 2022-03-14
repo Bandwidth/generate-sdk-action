@@ -30,6 +30,6 @@ jobs:
       
       - name: Close PR
         run: | 
-          hub issue update {{ steps.generate.outputs.pr-number }} -s closed
+          hub issue update ${{ steps.generate.outputs.pr-number }} -s closed
 
 
