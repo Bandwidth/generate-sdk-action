@@ -72,6 +72,7 @@ runs:
             git push origin ${{ inputs.branch-name }} 
           else
             git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
+            git pull
           fi
       shell: bash
     
