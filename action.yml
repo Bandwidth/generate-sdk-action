@@ -109,7 +109,12 @@ runs:
     - name: Commmit
       run: |
           git add .
-          git commit --allow-empty -m "Generate SDK"
+          if [ git diff --cached --exit-code ]
+          then
+            git commit --allow-empty -m "Generate SDK (No Changes)"
+          else 
+            git commit -m "Generate SDK"
+          fi
           git push origin ${{ inputs.branch-name }}
       shell: bash
 
