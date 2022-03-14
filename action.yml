@@ -103,9 +103,13 @@ runs:
       run: |
           rm -r generator
           rm -r node_modules
+      shell: bash
+
+    - name: Commmit
+      run: |
           git add .
           git commit -m "Generate SDK"
-          git push -f origin ${{ inputs.branch-name }}
+          git push origin ${{ inputs.branch-name }}
       shell: bash
 
     - name: Open Pull Request
