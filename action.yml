@@ -125,7 +125,6 @@ runs:
 
     - name: Commmit
       run: |
-          git add .
           git diff
           if [ $(git diff --exit-code) ]
           then
@@ -133,6 +132,7 @@ runs:
             git commit --allow-empty -m "Generate SDK (No Changes)"
           else 
             echo "Changes"
+            git add .
             git commit -m "Generate SDK with ${{ inputs.generator-organization }}:${{ inputs.generator-repository }} ${{ inputs.openapi-generator-version }}"
           fi
           git push origin ${{ inputs.branch-name }}
