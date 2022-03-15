@@ -159,5 +159,5 @@ runs:
       shell: bash
 
     - name: Delete Branch
-      run: $ git push origin --delete ${{ inputs.branch-name }}  
+      run: git push origin --delete ${{ inputs.branch-name }}  
       shell: bash
