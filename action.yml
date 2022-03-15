@@ -160,3 +160,4 @@ runs:
 
     - name: Delete Branch
       run: $ git push origin --delete ${{ inputs.branch-name }}  
+      shell: bash
