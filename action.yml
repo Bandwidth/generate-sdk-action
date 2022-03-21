@@ -87,7 +87,7 @@ runs:
     - name: Stich Specs Together
       run: |
         npm i openapi-merge-cli
-        npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
+        npx openapi-merge-cli --config ./${{ github.action_path }}/utils/openapi-merge.yml
       shell: bash
 
     - name: Clone OpenAPI Generator Project
