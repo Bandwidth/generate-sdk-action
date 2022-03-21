@@ -7,7 +7,7 @@ inputs:
     required: false
   spec-merge-config: 
     description: The path to the config file for the openapi-merge-cli tool
-    default: ../utils/openapi-merge.yml
+    default: ./${{ github.action_path }}/utils/openapi-merge.yml
     required: false
   branch-name: 
     description: Branch name
@@ -87,8 +87,6 @@ runs:
     - name: Stich Specs Together
       run: |
         npm i openapi-merge-cli
-        cd ...
-        ls -la
         npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
       shell: bash
 
