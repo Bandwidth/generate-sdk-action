@@ -7,7 +7,7 @@ inputs:
     required: false
   spec-merge-config: 
     description: The path to the config file for the openapi-merge-cli tool
-    default: utils/openapi-merge.yml
+    default: ./utils/openapi-merge.yml
     required: false
   branch-name: 
     description: Branch name
@@ -143,7 +143,7 @@ runs:
         exists=$(hub pr list -h {{ inputs.branch-name }})
         if [ -z "$exists" ]
         then
-          hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes'
+          hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes\n\nOpened By: '
         else
           echo "PR already exists for this branch"
         fi
