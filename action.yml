@@ -7,7 +7,7 @@ inputs:
     required: false
   spec-merge-config: 
     description: The path to the config file for the openapi-merge-cli tool
-    default: ./utils/openapi-merge.yml
+    default: ../utils/openapi-merge.yml
     required: false
   branch-name: 
     description: Branch name
