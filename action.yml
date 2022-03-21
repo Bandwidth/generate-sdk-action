@@ -87,7 +87,7 @@ runs:
     - name: Stich Specs Together
       run: |
         npm i openapi-merge-cli
-        cd 
+        cd ..
         ls -la
         npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
       shell: bash
