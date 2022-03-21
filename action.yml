@@ -89,7 +89,7 @@ runs:
         npm i openapi-merge-cli
         ls -la
         # npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
-        npx openapi-merge-cli --config ./utils/bandwidth.json
+        npx openapi-merge-cli --config ./utils/openapi-merge.yml
       shell: bash
 
     - name: Clone OpenAPI Generator Project
