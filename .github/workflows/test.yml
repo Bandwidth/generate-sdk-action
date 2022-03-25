@@ -3,6 +3,8 @@ on:
   pull_request: 
     paths:
       - 'action.yml'
+    branches: 
+      - '!ci-cd-test'
   workflow_dispatch: 
   
 jobs:
