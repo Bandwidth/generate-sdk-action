@@ -87,7 +87,7 @@ runs:
     - name: Clone sdk-utils
       if: inputs.file-source == 'remote'
       run: |
-        mkdir generator
+        mkdir utils
         git clone https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/sdk-utils utils
         rm -r utils/.git
       shell: bash
