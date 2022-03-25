@@ -1,8 +1,0 @@
----
-inputs:
-- inputFile: "./api-specs/messaging.json"
-- inputFile: "./api-specs/voice.json"
-- inputFile: "./api-specs/multiFactorAuth.json"
-- inputFile: "./api-specs/phoneNumberLookup.json"
-- inputFile: "./api-specs/webrtc.json"
-output: "./bandwidth.json"
