@@ -88,7 +88,7 @@ runs:
       if: inputs.file-source == 'remote'
       run: |
         mkdir generator
-        git clone https://github.com/Bandwidth/sdk-utils utils
+        git clone https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/sdk-utils utils
         rm -r utils/.git
       shell: bash
    
@@ -145,26 +145,26 @@ runs:
           git push origin ${{ inputs.branch-name }}
       shell: bash
 
-    - name: Open Pull Request
-      run: |
-        exists=$(hub pr list -h {{ inputs.branch-name }})
-        if [ -z "$exists" ]
-        then
-          hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes\n\nOpened By: '
-        else
-          echo "PR already exists for this branch"
-        fi
-      env:
-        GITHUB_TOKEN: ${{ inputs.token }}
-      shell: bash
+    # - name: Open Pull Request
+    #   run: |
+    #     exists=$(hub pr list -h {{ inputs.branch-name }})
+    #     if [ -z "$exists" ]
+    #     then
+    #       hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes\n\nOpened By: '
+    #     else
+    #       echo "PR already exists for this branch"
+    #     fi
+    #   env:
+    #     GITHUB_TOKEN: ${{ inputs.token }}
+    #   shell: bash
 
-    - name: Output PR Number 
-      id: output-pr-number
-      run: echo "::set-output name=pr-number::$(hub pr list -h ${{ inputs.branch-name }} -f %I)"
-      env:
-        GITHUB_TOKEN: ${{ inputs.token }}
-      shell: bash
+    # - name: Output PR Number 
+    #   id: output-pr-number
+    #   run: echo "::set-output name=pr-number::$(hub pr list -h ${{ inputs.branch-name }} -f %I)"
+    #   env:
+    #     GITHUB_TOKEN: ${{ inputs.token }}
+    #   shell: bash
 
-    - name: Delete Branch
-      run: git push origin --delete ${{ inputs.branch-name }}  
-      shell: bash
+    # - name: Delete Branch
+    #   run: git push origin --delete ${{ inputs.branch-name }}  
+    #   shell: bash

@@ -3,8 +3,6 @@ on:
   pull_request: 
     paths:
       - 'action.yml'
-    branches: 
-      - '!ci-cd-test'
   workflow_dispatch: 
   
 jobs:
@@ -29,11 +27,9 @@ jobs:
           api-spec-path: ./utils/api.json
           language: python
           config: utils/test-config.yml
-      
-      - name: Close PR
-        run: | 
-          hub issue update ${{ steps.generate.outputs.pr-number }} -s closed
-        env: 
-          GITHUB_TOKEN: ${{ secrets.DX_GITHUB_TOKEN }}
+
+      - name: Delete Branch
+        run: git push origin --delete ${{ inputs.branch-name }}  
+        shell: bash
 
 
