@@ -84,7 +84,7 @@ runs:
           rm -r remote/.git
       shell: bash
    
-    - name: Stich Specs Together
+    - name: Stitch Specs Together
       run: |
         npm i openapi-merge-cli
         npx openapi-merge-cli --config ${{ github.action_path }}/utils/openapi-merge.yml
