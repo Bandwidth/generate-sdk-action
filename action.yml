@@ -1,14 +1,6 @@
 name: Generate SDK Action
 description: Generate an SDK using the OpenAPI Generator Project
 inputs: 
-  file-source: 
-    description: '`local` or `remote` - where to clone the api specs from'
-    default: remote
-    required: false
-  spec-merge-config: 
-    description: The path to the config file for the openapi-merge-cli tool
-    default: ./utils/openapi-merge.yml
-    required: false
   branch-name: 
     description: Branch name
     required: true
@@ -29,6 +21,26 @@ inputs:
   specs-repository: 
     description: the remote repository to clone
     default: api-specs 
+    required: false
+  file-source: 
+    description: '`local` or `remote` - where to clone the api specs from'
+    default: remote
+    required: false
+  spec-merge-config: 
+    description: The path to the config file for the openapi-merge-cli tool
+    default: ./utils/openapi-merge.yml
+    required: false
+  run-pre-stitch-script: 
+    description: Boolean flag to run the preStitch.js script in the sdk-utils repository
+    default: 'true'
+    required: false
+  run-stitch-script: 
+    description: Boolean flag to run the openapi-merge cli 
+    default: 'true'
+    required: false
+  run-post-stitch-script: 
+    description: Boolean flag to run the preStitch.js script in the sdk-utils repository
+    default: 'true'
     required: false
   generator-organization: 
     description: The git orgaization for the generator repository
@@ -91,11 +103,27 @@ runs:
         git clone https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/sdk-utils utils
         rm -r utils/.git
       shell: bash
+
+    - name: Run preStitch script 
+      if: run-pre-stitch-script == 'true'
+      run: |
+        cd utils/scripts
+        npm install
+        node preStitch.js --config ./openapi-merge.yml
+      shell: bash
    
     - name: Stitch Specs Together
+      if: run-stitch-script == 'true'
       run: |
         npm i openapi-merge-cli
         npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
+      shell: bash
+
+    - name: Run postStitch script 
+      if: run-post-stitch-script == 'true'
+      run: |
+        cd utils/scripts
+        node postStitch.js --spec 
       shell: bash
 
     - name: Clone OpenAPI Generator Project
@@ -144,27 +172,3 @@ runs:
           fi
           git push origin ${{ inputs.branch-name }}
       shell: bash
-
-    # - name: Open Pull Request
-    #   run: |
-    #     exists=$(hub pr list -h {{ inputs.branch-name }})
-    #     if [ -z "$exists" ]
-    #     then
-    #       hub pull-request --base ${{ inputs.specs-organization}}:main -m '${{ inputs.branch-name }}' -m 'Generate SDK with Upstream API Spec Changes\n\nOpened By: '
-    #     else
-    #       echo "PR already exists for this branch"
-    #     fi
-    #   env:
-    #     GITHUB_TOKEN: ${{ inputs.token }}
-    #   shell: bash
-
-    # - name: Output PR Number 
-    #   id: output-pr-number
-    #   run: echo "::set-output name=pr-number::$(hub pr list -h ${{ inputs.branch-name }} -f %I)"
-    #   env:
-    #     GITHUB_TOKEN: ${{ inputs.token }}
-    #   shell: bash
-
-    # - name: Delete Branch
-    #   run: git push origin --delete ${{ inputs.branch-name }}  
-    #   shell: bash
