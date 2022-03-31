@@ -31,7 +31,7 @@ jobs:
           config: utils/test-config.yml
 
       - name: Delete Branch
-        run: git push origin --delete ${{ inputs.branch-name }}  
+        run: git push origin --delete ci-cd-test
         shell: bash
 
 
