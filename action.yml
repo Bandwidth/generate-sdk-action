@@ -105,7 +105,7 @@ runs:
       shell: bash
 
     - name: Run preStitch script 
-      if: run-pre-stitch-script == 'true'
+      if: inputs.run-pre-stitch-script == 'true'
       run: |
         cd utils/scripts
         npm install
@@ -113,14 +113,14 @@ runs:
       shell: bash
    
     - name: Stitch Specs Together
-      if: run-stitch-script == 'true'
+      if: inputs.run-stitch-script == 'true'
       run: |
         npm i openapi-merge-cli
         npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
       shell: bash
 
     - name: Run postStitch script 
-      if: run-post-stitch-script == 'true'
+      if: inputs.run-post-stitch-script == 'true'
       run: |
         cd utils/scripts
         node postStitch.js --spec 
