@@ -123,7 +123,7 @@ runs:
       if: inputs.run-post-stitch-script == 'true'
       run: |
         cd utils
-        node postStitch.js --spec ${{ inputs.api-spec-path }}
+        node postStitch.js --spec bandwidth.json
       shell: bash
 
     - name: Clone OpenAPI Generator Project
