@@ -107,7 +107,7 @@ runs:
     - name: Run preStitch script 
       if: inputs.run-pre-stitch-script == 'true'
       run: |
-        cd utils/scripts
+        cd utils
         npm install
         node preStitch.js --config ./openapi-merge.yml
       shell: bash
@@ -122,7 +122,7 @@ runs:
     - name: Run postStitch script 
       if: inputs.run-post-stitch-script == 'true'
       run: |
-        cd utils/scripts
+        cd utils
         node postStitch.js --spec 
       shell: bash
 
