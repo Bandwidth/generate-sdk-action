@@ -1,5 +1,0 @@
----
-inputs:
-- inputFile: "./test-api-specs/test1.json"
-- inputFile: "./test-api-specs/test2.json"
-output: "./api.json"
