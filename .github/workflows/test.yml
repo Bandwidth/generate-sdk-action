@@ -17,15 +17,11 @@ jobs:
         id: generate
         uses: ./ 
         with: 
-          file-source: local
           spec-merge-config: ./utils/test-openapi-merge.yml
           branch-name: ci-cd-test
           username: ${{ secrets.DX_GITHUB_USERNAME }}
           token:  ${{ secrets.DX_GITHUB_TOKEN }}
-          generator-organization: OpenAPITools
-          openapi-generator-version: v5.3.1
-          run-pre-stitch-script: 'false'
-          run-post-stitch-script: 'false'
+          openapi-generator-version: 6.0.1
           api-spec-path: ./utils/api.json
           language: python
           config: utils/test-config.yml
