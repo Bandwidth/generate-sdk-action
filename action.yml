@@ -89,7 +89,6 @@ runs:
     - name: Cleanup
       run: |
         rm -r remote
-        rm -r node_modules
       shell: bash
 
     - name: Commit
