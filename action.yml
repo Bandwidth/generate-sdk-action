@@ -22,47 +22,19 @@ inputs:
     description: the remote repository to clone
     default: api-specs 
     required: false
-  file-source: 
-    description: '`local` or `remote` - where to clone the api specs from'
-    default: remote
-    required: false
-  spec-merge-config: 
-    description: The path to the config file for the openapi-merge-cli tool
-    default: ./utils/openapi-merge.yml
-    required: false
-  run-pre-stitch-script: 
-    description: Boolean flag to run the preStitch.js script in the sdk-utils repository
-    default: 'true'
-    required: false
-  run-stitch-script: 
-    description: Boolean flag to run the openapi-merge cli 
-    default: 'true'
-    required: false
-  run-post-stitch-script: 
-    description: Boolean flag to run the preStitch.js script in the sdk-utils repository
-    default: 'true'
-    required: false
-  generator-organization: 
-    description: The git orgaization for the generator repository
-    required: false
-    default: OpenAPITools
-  generator-repository: 
-    description: The git repository for the generator 
-    required: false
-    default: openapi-generator
   openapi-generator-version: 
-    description: The OpenAPI Generator project version, in `v5.4.0` format
+    description: The OpenAPI Generator project version, in `6.0.1` format
     required: false
-    default: 'v5.4.0'
+    default: '6.0.1'
   api-spec-path: 
-    description: The destination of the API Specification after going through the openapi-merge tool
+    description: The destination of the API Specification to generate a client from
     required: false
-    default: ./utils/bandwidth.json
+    default: ./remote/bandwidth.json
   language: 
-    description: The generator name (`-g`) argument for the openapi generator
+    description: The generator name (language) (`-g`) argument for the openapi-generator-cli
     required: true
   config:
-    description: The configuration (`-c`) argument for the openapi generator
+    description: The configuration (`-c`) argument for the openapi-generator-cli
     required: true
 
 outputs: 
@@ -73,6 +45,11 @@ outputs:
 runs: 
   using: composite
   steps: 
+    - name: Setup Node 
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+
     - name: Create and push branch
       run: |
           git config user.email ${{ inputs.user-email }}
@@ -89,60 +66,21 @@ runs:
       shell: bash
     
     - name: Create and push branch with upstream api specs
-      if: inputs.file-source == 'remote' 
       run: |
           mkdir remote
           git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.specs-organization }}/${{ inputs.specs-repository }} remote
           rm -r remote/.git
       shell: bash
 
-    - name: Clone sdk-utils
-      if: inputs.file-source == 'remote'
+    - name: Setup OpenAPI Generator CLI
       run: |
-        mkdir utils
-        git clone https://${{ inputs.username }}:${{ inputs.token }}@github.com/Bandwidth/sdk-utils utils
-        rm -r utils/.git
-      shell: bash
-
-    - name: Run preStitch script 
-      if: inputs.run-pre-stitch-script == 'true'
-      run: |
-        cd utils
-        npm install
-        node preStitch.js --config ./openapi-merge.yml
-      shell: bash
-   
-    - name: Stitch Specs Together
-      if: inputs.run-stitch-script == 'true'
-      run: |
-        npm i openapi-merge-cli
-        npx openapi-merge-cli --config ${{ inputs.spec-merge-config }}
-      shell: bash
-
-    - name: Run postStitch script 
-      if: inputs.run-post-stitch-script == 'true'
-      run: |
-        cd utils
-        node postStitch.js --spec bandwidth.json
-      shell: bash
-
-    - name: Clone OpenAPI Generator Project
-      run: |
-        mkdir generator
-        git clone -b ${{ inputs.openapi-generator-version }} --single-branch https://github.com/${{ inputs.generator-organization }}/${{ inputs.generator-repository }} generator
-        rm -r generator/.git
-      shell: bash
-
-    - name: Build Generator
-      run: |
-        cd generator
-        mvn --projects org.openapitools:openapi-generator-cli --am clean install
-        cd ..
+        npm install @openapitools/openapi-generator-cli -g
+        openapi-generator-cli version-manager set ${{ inputs.openapi-generator-version }}
       shell: bash
 
     - name: Build SDK
       run: |
-        java -jar generator/modules/openapi-generator-cli/target/openapi-generator-cli.jar generate \
+        openapi-generator-cli generate \
          -g ${{ inputs.language }} \
          -i ${{ inputs.api-spec-path }}  \
          -c ${{ inputs.config }} 
@@ -150,15 +88,10 @@ runs:
     
     - name: Cleanup
       run: |
-        if [ '${{ inputs.file-source }}' == 'remote' ]
-        then
-          rm -r remote
-        fi
-        rm -r generator
-        rm -r node_modules
+        rm -r remote
       shell: bash
 
-    - name: Commmit
+    - name: Commit
       run: |
           git diff
           if [ $(git diff --exit-code) ]
