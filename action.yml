@@ -68,18 +68,16 @@ runs:
     - name: Commit if Necessary
       id: commit
       run: |
-          git diff
-          ls
-          pwd
-          # if [ "$(git diff --exit-code)" ]
-          # then
-          #   echo "No Changes"
-          # else
-          #   git add .
-          #   git commit -m "Generate SDK with OpenAPI Generator Version ${{ inputs.openapi-generator-version }}"
-          #   git push origin ${{ inputs.branch-name }}
-          #   echo "changes=true" >> $GITHUB_OUTPUT
-          # fi
+        git diff
+        # if [ "$(git diff --exit-code)" ]
+        # then
+        #   echo "No Changes"
+        # else
+        #   git add .
+        #   git commit -m "Generate SDK with OpenAPI Generator Version ${{ inputs.openapi-generator-version }}"
+        #   git push origin ${{ inputs.branch-name }}
+        #   echo "changes=true" >> $GITHUB_OUTPUT
+        # fi
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
