@@ -68,7 +68,7 @@ runs:
     - name: Commit if Necessary
       id: commit
       run: |
-          if [ $(git diff --exit-code) ]
+          if [ "$(git diff --exit-code)" ]
           then
             :
           else
@@ -77,4 +77,6 @@ runs:
             git push origin ${{ inputs.branch-name }}
             echo "changes=true" >> $GITHUB_OUTPUT
           fi
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
