@@ -68,8 +68,7 @@ runs:
     - name: Commit if Necessary
       id: commit
       run: |
-        if [ "$(git diff --exit-code)" ]
-        then
+        if git diff --quiet; then
           echo "No Changes"
         else
           echo "Changes"
