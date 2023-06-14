@@ -59,25 +59,16 @@ runs:
     - name: Build SDK
       run: |
         openapi-generator-cli generate \
-         -g ${{ inputs.language }} \
-         -i ${{ inputs.api-spec-path }} \
-         -c ${{ inputs.config }} \
-         -o ./
+        -g ${{ inputs.language }} \
+        -i ${{ inputs.api-spec-path }} \
+        -c ${{ inputs.config }} \
+        -o ./
       shell: bash
 
     - name: Commit if Necessary
       id: commit
       run: |
         git diff
-        # if [ "$(git diff --exit-code)" ]
-        # then
-        #   echo "No Changes"
-        # else
-        #   git add .
-        #   git commit -m "Generate SDK with OpenAPI Generator Version ${{ inputs.openapi-generator-version }}"
-        #   git push origin ${{ inputs.branch-name }}
-        #   echo "changes=true" >> $GITHUB_OUTPUT
-        # fi
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
