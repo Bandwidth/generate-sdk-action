@@ -18,7 +18,7 @@ inputs:
     default: dx@bandwidth.com
     required: false
   username: 
-    description: Github auth username
+    description: Github username
     default: DX-Bandwidth
     required: false
   openapi-generator-version: 
@@ -31,9 +31,9 @@ inputs:
     default: ./bandwidth.yml
 
 outputs: 
-  pr-number: 
-    description: "The number of the PR that was opened"
-    value: ${{ steps.output-pr-number.outputs.pr-number }}
+  changes: 
+    description: Boolean representing if files in the SDK were changed or not.
+    value: ${{ steps.commit.outputs.changes }}
 
 runs: 
   using: composite
@@ -65,17 +65,16 @@ runs:
          -o ./
       shell: bash
 
-    - name: Commit
+    - name: Commit if Necessary
+      id: commit
       run: |
-          git diff
           if [ $(git diff --exit-code) ]
           then
-            echo "No Changes"
-            git commit --allow-empty -m "Generate SDK (No Changes)"
-          else 
-            echo "Changes"
+            :
+          else
             git add .
-            git commit -m "Generate SDK with ${{ inputs.generator-organization }}:${{ inputs.generator-repository }} ${{ inputs.openapi-generator-version }}"
+            git commit -m "Generate SDK with OpenAPI Generator Version ${{ inputs.openapi-generator-version }}"
+            git push origin ${{ inputs.branch-name }}
+            echo "changes=true" >> $GITHUB_OUTPUT
           fi
-          git push origin ${{ inputs.branch-name }}
       shell: bash
