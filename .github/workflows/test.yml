@@ -22,14 +22,10 @@ jobs:
           token: ${{ secrets.DX_GITHUB_TOKEN }}
           openapi-generator-version: 6.0.1
           language: python
-          api-spec-path: ./utils/bandwidth.yml
+          api-spec-path: ./utils/bandwidth.ymls
           config: ./utils/test-config.yml
 
       - name: Delete Branch
-        run: git push origin --delete ci-cd-test
-        shell: bash
-
-      - name: Delete Branch if Workflow Fails
-        if: ${{ failure() }}
+        if: ${{ always() }}
         run: git push origin --delete ci-cd-test
         shell: bash
