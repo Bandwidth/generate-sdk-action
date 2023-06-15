@@ -4,43 +4,36 @@ inputs:
   branch-name: 
     description: Branch name
     required: true
-  user-email: 
-    description: Git user email
-    default: dx@bandwidth.com
-    required: false
-  username: 
-    description: Github auth username
-    required: true
   token: 
     description: Github auth token
     required: true
-  specs-organization: 
-    description: Owner of the remote repository
-    default: Bandwidth
-    required: false
-  specs-repository: 
-    description: the remote repository to clone
-    default: api-specs 
-    required: false
-  openapi-generator-version: 
-    description: The OpenAPI Generator project version, in `6.0.1` format
-    required: false
-    default: '6.0.1'
-  api-spec-path: 
-    description: The destination of the API Specification to generate a client from
-    required: false
-    default: ./remote/bandwidth.yml
   language: 
     description: The generator name (language) (`-g`) argument for the openapi-generator-cli
     required: true
   config:
     description: The configuration (`-c`) argument for the openapi-generator-cli
     required: true
+  user-email: 
+    description: Git user email
+    default: dx@bandwidth.com
+    required: false
+  username: 
+    description: Github username
+    default: DX-Bandwidth
+    required: false
+  openapi-generator-version: 
+    description: The OpenAPI Generator project version, in `x.x.x` format
+    required: false
+    default: '6.5.0'
+  api-spec-path: 
+    description: The destination of the API Specification to generate a client from
+    required: false
+    default: ./bandwidth.yml
 
 outputs: 
-  pr-number: 
-    description: "The number of the PR that was opened"
-    value: ${{ steps.output-pr-number.outputs.pr-number }}
+  changes: 
+    description: Boolean representing if files in the SDK were changed or not.
+    value: ${{ steps.commit.outputs.changes }}
 
 runs: 
   using: composite
@@ -50,26 +43,11 @@ runs:
       with:
         node-version: 16
 
-    - name: Create and push branch
+    - name: Configure Git and Create Branch
       run: |
           git config user.email ${{ inputs.user-email }}
           git config user.name ${{ inputs.username }}
-          git fetch origin
-          if [ -z $(git show-ref refs/remotes/origin/${{ inputs.branch-name }}) ]
-          then
-            git checkout -b ${{ inputs.branch-name }}
-            git push origin ${{ inputs.branch-name }} 
-          else
-            git switch -c ${{ inputs.branch-name }} origin/${{ inputs.branch-name }}
-            git pull
-          fi
-      shell: bash
-    
-    - name: Create and push branch with upstream api specs
-      run: |
-          mkdir remote
-          git clone --branch ${{ inputs.branch-name }} https://${{ inputs.username }}:${{ inputs.token }}@github.com/${{ inputs.specs-organization }}/${{ inputs.specs-repository }} remote
-          rm -r remote/.git
+          git checkout -b ${{ inputs.branch-name }}
       shell: bash
 
     - name: Setup OpenAPI Generator CLI
@@ -81,27 +59,23 @@ runs:
     - name: Build SDK
       run: |
         openapi-generator-cli generate \
-         -g ${{ inputs.language }} \
-         -i ${{ inputs.api-spec-path }}  \
-         -c ${{ inputs.config }} 
-      shell: bash
-    
-    - name: Cleanup
-      run: |
-        rm -r remote
+        -g ${{ inputs.language }} \
+        -i ${{ inputs.api-spec-path }} \
+        -c ${{ inputs.config }} \
+        -o ./
       shell: bash
 
-    - name: Commit
+    - name: Commit if Necessary
+      id: commit
       run: |
-          git diff
-          if [ $(git diff --exit-code) ]
-          then
-            echo "No Changes"
-            git commit --allow-empty -m "Generate SDK (No Changes)"
-          else 
-            echo "Changes"
-            git add .
-            git commit -m "Generate SDK with ${{ inputs.generator-organization }}:${{ inputs.generator-repository }} ${{ inputs.openapi-generator-version }}"
-          fi
+        if git diff --quiet; then
+          echo "No Changes"
+        else
+          git add .
+          git commit -m "Generate SDK with OpenAPI Generator Version ${{ inputs.openapi-generator-version }}"
           git push origin ${{ inputs.branch-name }}
+          echo "changes=true" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
