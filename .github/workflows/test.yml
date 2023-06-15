@@ -20,9 +20,9 @@ jobs:
           branch-name: ci-cd-test
           username: ${{ secrets.DX_GITHUB_USERNAME }}
           token: ${{ secrets.DX_GITHUB_TOKEN }}
-          openapi-generator-version: 6.0.1
+          openapi-generator-version: 6.5.0
           language: python
-          api-spec-path: ./utils/bandwidth.ymls
+          api-spec-path: ./utils/bandwidth.yml
           config: ./utils/test-config.yml
 
       - name: Delete Branch
