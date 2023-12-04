@@ -33,6 +33,10 @@ api-spec-path:
   description: The destination of the API Specification to generate a client from
   required: false
   default: ./bandwidth.yml
+working-directory:
+  description: The working directory to run the action in
+  required: false
+  default: ./
 ```
 
 ## Outputs
