@@ -29,6 +29,10 @@ inputs:
     description: The destination of the API Specification to generate a client from
     required: false
     default: ./bandwidth.yml
+  working-directory: 
+    description: The working directory to run the action in
+    required: false
+    default: ./
 
 outputs: 
   changes: 
@@ -49,12 +53,14 @@ runs:
           git config user.name ${{ inputs.username }}
           git checkout -b ${{ inputs.branch-name }}
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Setup OpenAPI Generator CLI
       run: |
         npm install @openapitools/openapi-generator-cli -g
         openapi-generator-cli version-manager set ${{ inputs.openapi-generator-version }}
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Build SDK
       run: |
@@ -64,6 +70,7 @@ runs:
         -c ${{ inputs.config }} \
         -o ./
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
 
     - name: Commit if Necessary
       id: commit
@@ -79,3 +86,4 @@ runs:
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
+      working-directory: ${{ inputs.working-directory }}
