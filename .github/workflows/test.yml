@@ -20,7 +20,7 @@ jobs:
             workloads/prod/software_infra::secrets:dx-github-token:dx-github-token::DX_GITHUB_TOKEN
 
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Test with Local Files
         id: generate
