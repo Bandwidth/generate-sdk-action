@@ -13,7 +13,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - name: Get Github and Jira Tokens from Vault
+      - name: Get Github Token from Vault
         uses: Bandwidth/vault-provider-action@v1
         with:
           secrets: |
