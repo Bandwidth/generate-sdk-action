@@ -8,18 +8,25 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.SWI_GLORG_UBUNTU_2204) }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
+      - name: Get Github Token from Vault
+        uses: Bandwidth/vault-provider-action@v1
+        with:
+          export-github-pat: true
+
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run Test with Local Files
         id: generate
         uses: ./
         with:
           branch-name: ci-cd-test
-          username: ${{ secrets.DX_GITHUB_USERNAME }}
-          token: ${{ secrets.DX_GITHUB_TOKEN }}
+          token: ${{ env.GITHUB_TEAM_ACCESS_TOKEN }}
           openapi-generator-version: 6.5.0
           language: python
           api-spec-path: ./utils/bandwidth.yml
