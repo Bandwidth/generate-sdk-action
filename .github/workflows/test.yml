@@ -8,8 +8,17 @@ on:
 jobs:
   test:
     name: Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ fromJSON(vars.SWI_GLORG_UBUNTU_2204) }}
+    permissions:
+      id-token: write
+      contents: read
     steps:
+      - name: Get Github and Jira Tokens from Vault
+        uses: Bandwidth/vault-provider-action@v1
+        with:
+          secrets: |
+            workloads/prod/software_infra::secrets:dx-github-token:dx-github-token::DX_GITHUB_TOKEN
+
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -18,8 +27,7 @@ jobs:
         uses: ./
         with:
           branch-name: ci-cd-test
-          username: ${{ secrets.DX_GITHUB_USERNAME }}
-          token: ${{ secrets.DX_GITHUB_TOKEN }}
+          token: ${{ env.DX_GITHUB_TOKEN }}
           openapi-generator-version: 6.5.0
           language: python
           api-spec-path: ./utils/bandwidth.yml
