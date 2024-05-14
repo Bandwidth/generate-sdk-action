@@ -1,8 +1,8 @@
 name: Test
 on:
   pull_request:
-      paths:
-          - "action.yml"
+    paths:
+      - "action.yml"
   workflow_dispatch:
 
 jobs:
