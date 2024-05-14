@@ -1,38 +1,40 @@
 name: Test
 on:
-  pull_request:
-    paths:
-      - "action.yml"
-  workflow_dispatch:
+    pull_request:
+        paths:
+            - "action.yml"
+    workflow_dispatch:
 
 jobs:
-  test:
-    name: Test
-    runs-on: ${{ fromJSON(vars.SWI_GLORG_UBUNTU_2204) }}
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - name: Get Github Token from Vault
-        uses: Bandwidth/vault-provider-action@v1
-        with:
-          export-github-pat: true
+    test:
+        name: Test
+        runs-on: ${{ fromJSON(vars.SWI_GLORG_UBUNTU_2204) }}
+        permissions:
+            id-token: write
+            contents: read
+        steps:
+            - name: Get Github Token from Vault
+              uses: Bandwidth/vault-provider-action@v1
+              with:
+                  export-github-pat: true
 
-      - name: Checkout
-        uses: actions/checkout@v4
+            - name: Checkout
+              uses: actions/checkout@v4
 
-      - name: Run Test with Local Files
-        id: generate
-        uses: ./
-        with:
-          branch-name: ci-cd-test
-          token: ${{ env.GITHUB_TEAM_ACCESS_TOKEN }}
-          openapi-generator-version: 6.5.0
-          language: python
-          api-spec-path: ./utils/bandwidth.yml
-          config: ./utils/test-config.yml
+            - name: Run Test with Local Files
+              id: generate
+              uses: ./
+              with:
+                  branch-name: ci-cd-test
+                  token: ${{ env.GITHUB_TEAM_ACCESS_TOKEN }}
+                  openapi-generator-version: 6.5.0
+                  language: python
+                  api-spec-path: ./utils/bandwidth.yml
+                  config: ./utils/test-config.yml
 
-      - name: Delete Branch
-        if: ${{ always() }}
-        run: git push origin --delete ci-cd-test
-        shell: bash
+            - name: Delete Branch
+              if: ${{ always() }}
+              run: git push origin --delete ci-cd-test
+              shell: bash
+              env:
+                  GITHUB_TOKEN: ${{ env.GITHUB_TEAM_ACCESS_TOKEN }}
