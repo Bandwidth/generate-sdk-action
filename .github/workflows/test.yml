@@ -11,7 +11,7 @@ jobs:
     runs-on: ${{ fromJSON(vars.SWI_GLORG_UBUNTU_2204) }}
     permissions:
       id-token: write
-      contents: read
+      contents: write
     steps:
       - name: Get Github Token from Vault
         uses: Bandwidth/vault-provider-action@v1
