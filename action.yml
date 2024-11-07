@@ -16,11 +16,14 @@ inputs:
     description: The OpenAPI Generator project version, in `x.x.x` format
     required: false
     default: '7.6.0'
+  additional-properties:
+    description: Additional properties to pass to the generator
+    required: false
+    default: ''
   working-directory: 
     description: The working directory to run the action in
     required: false
     default: ./
-
 
 runs: 
   using: composite
@@ -43,6 +46,7 @@ runs:
         -g ${{ inputs.language }} \
         -i ${{ inputs.api-spec-path }} \
         -c ${{ inputs.config }} \
+        ${{ inputs.additional-properties }} \
         -o ./
       shell: bash
       working-directory: ${{ inputs.working-directory }}
