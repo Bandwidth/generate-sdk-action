@@ -1,43 +1,29 @@
 name: Generate SDK Action
 description: Generate an SDK using the OpenAPI Generator Project
 inputs: 
-  branch-name: 
-    description: Branch name
-    required: true
-  token: 
-    description: Github auth token
-    required: true
   language: 
     description: The generator name (language) (`-g`) argument for the openapi-generator-cli
     required: true
   config:
     description: The configuration (`-c`) argument for the openapi-generator-cli
-    required: true
-  user-email: 
-    description: Git user email
-    default: dx@bandwidth.com
     required: false
-  username: 
-    description: Github username
-    default: DX-Bandwidth
-    required: false
-  openapi-generator-version: 
-    description: The OpenAPI Generator project version, in `x.x.x` format
-    required: false
-    default: '6.5.0'
+    default: ./openapi-config.yml
   api-spec-path: 
     description: The destination of the API Specification to generate a client from
     required: false
     default: ./bandwidth.yml
+  openapi-generator-version: 
+    description: The OpenAPI Generator project version, in `x.x.x` format
+    required: false
+    default: '7.6.0'
+  additional-properties:
+    description: Additional properties to pass to the generator
+    required: false
+    default: ''
   working-directory: 
     description: The working directory to run the action in
     required: false
     default: ./
-
-outputs: 
-  changes: 
-    description: Boolean representing if files in the SDK were changed or not.
-    value: ${{ steps.commit.outputs.changes }}
 
 runs: 
   using: composite
@@ -46,14 +32,6 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: 20
-
-    - name: Configure Git and Create Branch
-      run: |
-          git config user.email ${{ inputs.user-email }}
-          git config user.name ${{ inputs.username }}
-          git checkout -b ${{ inputs.branch-name }}
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
 
     - name: Setup OpenAPI Generator CLI
       run: |
@@ -68,22 +46,7 @@ runs:
         -g ${{ inputs.language }} \
         -i ${{ inputs.api-spec-path }} \
         -c ${{ inputs.config }} \
+        ${{ inputs.additional-properties }} \
         -o ./
-      shell: bash
-      working-directory: ${{ inputs.working-directory }}
-
-    - name: Commit if Necessary
-      id: commit
-      run: |
-        if git diff --quiet; then
-          echo "No Changes"
-        else
-          git add .
-          git commit -m "Generate SDK with OpenAPI Generator Version ${{ inputs.openapi-generator-version }}"
-          git push origin ${{ inputs.branch-name }}
-          echo "changes=true" >> $GITHUB_OUTPUT
-        fi
-      env:
-        GITHUB_TOKEN: ${{ inputs.token }}
       shell: bash
       working-directory: ${{ inputs.working-directory }}
