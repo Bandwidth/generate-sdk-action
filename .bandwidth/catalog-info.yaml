@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  schemaVersion: v1.0.0
+  name: generate-sdk-action-location
+  description: Links to additional entities in the generate-sdk-action repository.
+  annotations:
+    github.com/project-slug: Bandwidth/generate-sdk-action
+spec:
+  targets:
+    - ./component.yaml
