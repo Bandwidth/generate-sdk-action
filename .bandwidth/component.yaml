@@ -1,0 +1,14 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  schemaVersion: v1.0.0
+  name: generate-sdk-action
+  description: This action utilizes the openapi-generator-cli(https://github.com/OpenAPITools/openapi-generator-cli) tool to build a client SDK based on certain action inputs.
+  annotations:
+    github.com/project-slug: Bandwidth/generate-sdk-action
+    organization: BW
+    costCenter: Development - Software Infra
+spec:
+  type: GitHub Action
+  owner: github/band-swi
+  lifecycle: Available
