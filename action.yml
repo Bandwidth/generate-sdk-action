@@ -1,48 +1,41 @@
 name: Generate SDK Action
 description: Generate an SDK using the OpenAPI Generator Project
-inputs: 
-  language: 
+inputs:
+  language:
     description: The generator name (language) (`-g`) argument for the openapi-generator-cli
     required: true
   config:
     description: The configuration (`-c`) argument for the openapi-generator-cli
     required: false
     default: ./openapi-config.yml
-  api-spec-path: 
+  api-spec-path:
     description: The destination of the API Specification to generate a client from
     required: false
     default: ./bandwidth.yml
-  openapi-generator-version: 
+  openapi-generator-version:
     description: The OpenAPI Generator project version, in `x.x.x` format
     required: false
-    default: '7.6.0'
+    default: "7.6.0"
   additional-properties:
     description: Additional properties to pass to the generator
     required: false
-    default: ''
-  working-directory: 
+    default: ""
+  working-directory:
     description: The working directory to run the action in
     required: false
     default: ./
 
-runs: 
+runs:
   using: composite
-  steps: 
-    - name: Setup Node 
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-
+  steps:
     - name: Setup OpenAPI Generator CLI
-      run: |
-        npm install @openapitools/openapi-generator-cli -g
-        openapi-generator-cli version-manager set ${{ inputs.openapi-generator-version }}
+      run: npx --yes @openapitools/openapi-generator-cli version-manager set ${{ inputs.openapi-generator-version }}
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
     - name: Build SDK
       run: |
-        openapi-generator-cli generate \
+        npx --yes @openapitools/openapi-generator-cli generate \
         -g ${{ inputs.language }} \
         -i ${{ inputs.api-spec-path }} \
         -c ${{ inputs.config }} \
