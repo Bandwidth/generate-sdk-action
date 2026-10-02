@@ -13,7 +13,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Run Test with Local Files
+      - name: Run Test with Explicit Generator Version
+        uses: ./
+        with:
+          language: python
+          api-spec-path: ./utils/bandwidth.yml
+          config: ./utils/test-config.yml
+          openapi-generator-version: 7.6.0
+
+      - name: Run Test with Generator Version from openapitools.json
         uses: ./
         with:
           language: python

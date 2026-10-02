@@ -17,9 +17,9 @@ api-spec-path:
   required: false
   default: ./bandwidth.yml
 openapi-generator-version: 
-  description: The OpenAPI Generator project version, in `x.x.x` format
+  description: The OpenAPI Generator project version, in `x.x.x` format. If not set, the version in the working directory's `openapitools.json` is used
   required: false
-  default: '7.6.0'
+  default: ''
 additional-properties:
   description: Additional properties to pass to the generator
   required: false

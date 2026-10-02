@@ -13,9 +13,9 @@ inputs:
     required: false
     default: ./bandwidth.yml
   openapi-generator-version:
-    description: The OpenAPI Generator project version, in `x.x.x` format
+    description: The OpenAPI Generator project version, in `x.x.x` format. If not set, the version in the working directory's `openapitools.json` is used
     required: false
-    default: "7.6.0"
+    default: ""
   additional-properties:
     description: Additional properties to pass to the generator
     required: false
@@ -29,6 +29,7 @@ runs:
   using: composite
   steps:
     - name: Setup OpenAPI Generator CLI
+      if: inputs.openapi-generator-version != ''
       run: npx --yes @openapitools/openapi-generator-cli version-manager set ${{ inputs.openapi-generator-version }}
       shell: bash
       working-directory: ${{ inputs.working-directory }}
